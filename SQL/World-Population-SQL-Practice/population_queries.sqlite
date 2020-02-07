@@ -1,0 +1,66 @@
+SELECT COUNT(*)
+FROM countries
+WHERE continent = 'Africa';
+-- 56 entries
+
+WITH countrypop AS (
+  SELECT *
+  FROM countries
+  JOIN population_years
+    ON countries.id = population_years.country_id
+)
+SELECT *
+FROM countrypop
+LIMIT 10;
+-- checking to see if the join worked
+
+-- saving the above join into a new table
+CREATE TABLE poptemp AS
+  SELECT *
+  FROM countries
+  JOIN population_years
+    ON countries.id = population_years.country_id;
+CREATE TABLE countrypop AS
+  SELECT id, name, continent, population, year
+  FROM poptemp;
+DROP TABLE poptemp;
+    
+-- did it work?
+SELECT *
+FROM countrypop
+LIMIT 10;
+-- yes!
+
+-- moving on to #4
+SELECT SUM(population)
+FROM countrypop
+WHERE continent = 'Oceania'
+  AND year = 2005;
+-- 2005 population of Oceania is ~32.66 mil
+
+SELECT AVG(population)
+FROM countrypop
+WHERE continent = 'South America'
+  AND year = 2003;
+-- 2003 avg pop of countries in S. America is ~25.89 mil
+
+SELECT id, name, continent, MIN(population)
+FROM countrypop
+WHERE year = 2007;
+-- 2007 minimum is Niue, Oceania with 2,160
+
+SELECT AVG(population)
+FROM countrypop
+WHERE name = 'Poland';
+-- avg pop of Poland from 2000-2010 is ~38.56 mil
+
+SELECT DISTINCT name
+FROM countrypop
+WHERE name LIKE '%The%';
+-- 3 countries: The Bahamas, Netherlands, The Gambia
+
+SELECT continent, SUM(population)
+FROM countrypop
+WHERE year = 2010
+GROUP BY continent;
+-- Africa: 1.015B, Asia: 4.133B, Euro: 723M, NA: 540M, SA: 397M, Oceania: 35M
